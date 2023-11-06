@@ -1,78 +1,53 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
-struct jogadores{
-    char nome[30];
-    char posicao;
-    int forca;
-};
+double ForcaPonderada(char nomeTime[50], double forcas[11]){
+    double forcaTotal = 0, G = forcas[0], L1 = forcas[1], L2 = forcas[4], Z1 = forcas[2], Z2 = forcas[3], V1 = forcas[5], V2 = forcas[6], M1 = forcas[7], M2 = forcas[8], A1 = forcas[9], A2 = forcas[10];
+
+    forcaTotal = (8 * G + 10 * (L1 + L2) + 5 * (Z1 + Z2) + 8 * (V1 + V2) + 11 * (M1 + M2) + 12 * (A1 + A2)) / 100;
+
+    return forcaTotal;
+}
 
 int main(){
+    char nomeTime1[50], nomeTime2[50], linha[100], nome[50], posicao;
+    double forcasTime1[11] = {0}, forcasTime2[11] = {0}, forca, forcaPonderadaTime1, forcaPonderadaTime2;
+    int indicie = 0;
 
-    struct jogadores jogadorTime1[11];
-    struct jogadores jogadorTime2[11];
+    while(indicie < 24){
+            fgets(linha, sizeof(linha), stdin);
+            linha[strcspn(linha, "\n")] = '\0';
+            if(linha[0] == '\0'){
+                break;
+            }
 
-    char time1[30], time2[30];
-    int i, G = 0, L = 0, Z = 0, V = 0, M = 0, A = 0;
-    double forcaTotal1, forcaTotal2;
+            if(indicie == 0){
+                strcpy(nomeTime1, linha);
+            }else if(indicie == 12){
+                strcpy(nomeTime2, linha);
+            }else{
+                sscanf(linha, "%[^;];%c;%lf", nome, &posicao, &forca);
 
-    scanf("%s", &time1);
-    for(i = 0; i < 11; i++){
-        scanf("%s;%c;%d", &jogadorTime1[i].nome, &jogadorTime1[i].posicao, &jogadorTime1[i].forca);
-        switch(jogadorTime1[i].posicao){
-            case 'G':
-                G = jogadorTime1[i].forca;
-                break;
-            case 'L':
-                L += jogadorTime1[i].forca;
-                break;
-            case 'Z':
-                Z += jogadorTime1[i].forca;
-                break;
-            case 'V':
-                V += jogadorTime1[i].forca;
-                break;
-            case 'M':
-                M += jogadorTime1[i].forca;
-                break;
-            case 'A':
-                A += jogadorTime1[i].forca;
-                break;
-        }
+                if(indicie <= 11){
+                    forcasTime1[indicie - 1] = forca;
+                }else{
+                    forcasTime2[indicie - 12 - 1] = forca;
+                }
+            }
+            indicie++;
     }
 
-    forcaTotal1 = (8 * G + 10 * (L + Z) + 5 * (V + M) + 12 * (A)) / 100;
+    forcaPonderadaTime1 = ForcaPonderada(nomeTime1, forcasTime1);
+    forcaPonderadaTime2 = ForcaPonderada(nomeTime2, forcasTime2);
 
+    printf("%s: %.2lf de forca\n", nomeTime1, forcaPonderadaTime1);
+    printf("%s: %.2lf de forca\n", nomeTime2, forcaPonderadaTime2);
 
-    scanf("%s", &time2);
-    for(i = 0; i < 11; i++){
-        scanf("%s;%c;%d", &jogadorTime2[i].nome, &jogadorTime2[i].posicao, &jogadorTime2[i].forca);
-        switch(jogadorTime2[i].posicao){
-            case 'G':
-                G = jogadorTime2[i].forca;
-                break;
-            case 'L':
-                L += jogadorTime2[i].forca;
-                break;
-            case 'Z':
-                Z += jogadorTime2[i].forca;
-                break;
-            case 'V':
-                V += jogadorTime2[i].forca;
-                break;
-            case 'M':
-                M += jogadorTime2[i].forca;
-                break;
-            case 'A':
-                A += jogadorTime2[i].forca;
-                break;
-        }
+    if(forcaPonderadaTime1 > forcaPonderadaTime2){
+        printf("%s eh mais forte\n", nomeTime1);
+    }else if(forcaPonderadaTime2 > forcaPonderadaTime1){
+        printf("%s eh mais forte\n", nomeTime2);
     }
-
-    forcaTotal2 = (8 * G + 10 * (L + Z) + 5 * (V + M) + 12 * (A)) / 100;
-
-    printf("%0.2lf e %0.2lf", forcaTotal1, forcaTotal2);
 
     return 0;
 }
